@@ -165,6 +165,16 @@ public class UploadArtifact {
     public Object releaseType = Constants.RELEASE_TYPE_ALPHA;
 
     /**
+     * Whether the file should be held for manual release after CurseForge approves it. The default is false, meaning an
+     * approved file is released automatically. Enabling this lets you upload a file ahead of time and release it
+     * manually through the CurseForge website later.
+     * <p>
+     * When a sub file is created using {@link #withAdditionalFile(Object)} it will inherit the current manual release
+     * setting. This can still be changed independently after creation.
+     */
+    public boolean isMarkedForManualRelease = false;
+
+    /**
      * These are created using a helper method from TaskPublishCurseForge. Users should never construct this manually.
      *
      * @param artifact      The artifact to publish. This is not necessarily a file and may not be valid until later in
@@ -197,9 +207,9 @@ public class UploadArtifact {
      * child files or sub files. Only parent files can have additional files. Attempting to create an additional file on
      * another additional file is unsupported.
      * <p>
-     * By default additional files will copy the changelog, changelog type, release type, and project relations from the
-     * parent. Properties copied to an additional file can be modified after the fact however some properties like game
-     * versions are exclusively defined by the parent file.
+     * By default additional files will copy the changelog, changelog type, release type, manual release flag, and
+     * project relations from the parent. Properties copied to an additional file can be modified after the fact however
+     * some properties like game versions are exclusively defined by the parent file.
      *
      * @param file The file to publish.
      * @return An object that represents the artifact being published. This can be used to perform additional
@@ -217,6 +227,7 @@ public class UploadArtifact {
         subFile.changelogType = this.changelogType;
         subFile.changelog = this.changelog;
         subFile.releaseType = this.releaseType;
+        subFile.isMarkedForManualRelease = this.isMarkedForManualRelease;
         subFile.relationships = new HashMap<>(this.relationships);
 
         this.additionalFiles.add(subFile);
@@ -581,6 +592,12 @@ public class UploadArtifact {
         request.changelogType = TaskPublishCurseForge.parseString(this.changelogType);
         request.displayName = TaskPublishCurseForge.parseString(this.displayName);
         request.releaseType = TaskPublishCurseForge.parseString(this.releaseType);
+
+        // Only set the manual release flag when it's enabled. Curse releases approved files automatically otherwise.
+        if (this.isMarkedForManualRelease) {
+
+            request.isMarkedForManualRelease = true;
+        }
 
         // Only set the relations if they actually exist. Curse doesn't like empty arrays here :upside_down:
         if (!this.uploadRelations.getRelations().isEmpty()) {

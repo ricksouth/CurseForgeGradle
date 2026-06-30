@@ -215,9 +215,15 @@ task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge)
     // The main file to upload
     def mainFile = upload(469122, jar)
     mainFile.releaseType = 'beta'
+
+    // Hold the file for manual release on the website instead of releasing it automatically once approved.
+    // mainFile.isMarkedForManualRelease = true
+
     mainFile.addGameVersion('26.1.2')
     mainFile.addEnvironment('Client')
+
     mainFile.changelog = 'This is a test file. Please ignore it. The mod does nothing.'
     mainFile.changelogType = 'markdown'
+    
     mainFile.addIncompatibility('bookshelf')
 }

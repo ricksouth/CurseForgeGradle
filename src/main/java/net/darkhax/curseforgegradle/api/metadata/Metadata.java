@@ -59,6 +59,13 @@ public final class Metadata {
     public String releaseType = Constants.RELEASE_TYPE_ALPHA;
 
     /**
+     * Whether to hold the file for manual release after approval. OPTIONAL
+     */
+    @Expose
+    @SerializedName("isMarkedForManualRelease")
+    public Boolean isMarkedForManualRelease = null;
+
+    /**
      * The relationship metadata. OPTIONAL
      * <p>
      * If {@link ProjectRelations#getRelations()} is empty this must be null.
